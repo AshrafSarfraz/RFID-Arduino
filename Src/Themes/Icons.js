@@ -1,0 +1,9 @@
+const IconPath='../Assests/Icons/'
+export const Home=require(IconPath+'home')
+export const Phone=require(IconPath+'call')
+export const User=require(IconPath+'user')
+export const User1=require(IconPath+'user1')
+export const Mail=require(IconPath+'mail')
+export const Pen=require(IconPath+'pen')
+export const Lock=require(IconPath+'lock')
+export const Exit=require(IconPath+'exit')
