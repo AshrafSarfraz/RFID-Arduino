@@ -27,7 +27,7 @@ const styles=StyleSheet.create({
   Btn_Txt:{
     fontSize:16,
     color:Colors.Black,
-    fontFamily:Fonts.SF_Bold,
+    fontFamily:Fonts.SF_SemiBold,
     lineHeight:20,
     letterSpacing:0.3
 

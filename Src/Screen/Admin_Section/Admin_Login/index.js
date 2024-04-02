@@ -1,15 +1,16 @@
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Image } from 'react-native'
+import { View, Text,  TextInput, Image } from 'react-native'
 import React, { useState } from 'react'
 import { Colors } from '../../../Themes/Colors'
-import { Lock, Mail, } from '../../../Themes/Icons';
+import { Lock, Mail,  } from '../../../Themes/Icons';
 import CustomButton from '../../../Components/CustomButton';
 import { styles } from './style';
 
-const LoginScreen = ({ navigation }) => {
+
+const Admin_Login = ({ navigation }) => {
     const [Email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-
+  
     return (
         <View style={styles.Main_Cont}>
             <Text style={styles.Sign_Txt}>Sign In</Text>
@@ -24,7 +25,7 @@ const LoginScreen = ({ navigation }) => {
                 />
             </View>
             <View style={styles.inputContainer}>
-                <Image source={Lock} style={styles.Lock_Style} />
+            <Image source={Lock} style={styles.Lock_Style} />
                 <TextInput
                     style={styles.input}
                     placeholder="Password"
@@ -34,17 +35,19 @@ const LoginScreen = ({ navigation }) => {
                     secureTextEntry
                 />
             </View>
-            <CustomButton title={'Login'} onPress={() => { navigation.navigate('HomeScreen') }} />
-            <View style={styles.SignUp_Cont}>
-                <Text style={styles.Already_Txt}>Don't have an account?</Text>
-                <TouchableOpacity onPress={() => { navigation.navigate('SignUp') }} >
-                    <Text style={styles.Btn_Txt} >Sign Up</Text>
-                </TouchableOpacity>
-            </View>
+          <CustomButton title={'Login'} onPress={()=>{navigation.navigate('Administrator')}} />
+        
         </View>
 
     )
 }
+  
+// <View  style={styles.SignUp_Cont}>
+// <Text  style={styles.Already_Txt}>Don't have an account?</Text>
+// <TouchableOpacity onPress={()=>{navigation.navigate('SignUp')}} >
+// <Text style={styles.Btn_Txt} >Sign Up</Text>
+// </TouchableOpacity>
+// </View>
 
-export default LoginScreen
+export default Admin_Login
 
