@@ -11,6 +11,7 @@ const Admin_Login = ({ navigation }) => {
   const [password, setPassword] = useState('');
   
   const handleLogin = async () => {
+      setEmail(''),setPassword('')
     if (Email === 'admin123@gmail.com' && password === 'admin12345') {
       // Navigate to Administrator screen
       navigation.navigate('Administrator');

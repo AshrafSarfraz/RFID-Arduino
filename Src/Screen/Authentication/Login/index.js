@@ -1,10 +1,11 @@
-import { View, Text,Alert ,TextInput, TouchableOpacity, Image } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, Alert, TextInput, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
 import auth from '@react-native-firebase/auth';
 import moment from 'moment';
 import firestore from '@react-native-firebase/firestore';
-import { Colors } from '../../../Themes/Colors'
-import { Lock, Mail, } from '../../../Themes/Icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Colors } from '../../../Themes/Colors';
+import { Lock, Mail } from '../../../Themes/Icons';
 import CustomButton from '../../../Components/CustomButton';
 import { styles } from './style';
 
@@ -12,41 +13,31 @@ const LoginScreen = ({ navigation }) => {
     const [Email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isError, setIsError] = useState('');
-    const [userData,setUserData]=useState([])
-    
+    const [isLoading, setIsLoading] = useState(false); // State for activity indicator
+
     const handleSignIn = async () => {
         try {
+            setIsLoading(true); // Show activity indicator
             if (!Email || !password) {
                 setIsError('Please fill in both email and password fields.');
+                setIsLoading(false); // Hide activity indicator
                 return;
-            }    
-    
+            }
             const userCredential = await auth().signInWithEmailAndPassword(Email, password);
             const user = userCredential.user;
-            setEmail('');
-            setPassword('');
-    
-            // Retrieve user document from Firestore
+            setEmail(''); setPassword('');
             const userDoc = await firestore().collection('Users').doc(user.uid).get();
-    
             if (userDoc.exists) {
                 const userData = userDoc.data();
-    
-                // Check if the user has a login count property
                 let loginCount = userData.LoginCount || 0;
-                loginCount++; // Increment the login count
-    
-                // Update user data in Firestore with the incremented login count
+                loginCount++;
                 await firestore().collection('Users').doc(user.uid).update({
                     LoginCount: loginCount,
-                    // Add the login event to the array of login/logout events
-                    LoginLogoutEvents: firestore.FieldValue.arrayUnion({ 
-                        timestamp: moment().format('YYYY-MM-DD hh:mm A'), 
-                        status: 'User logged In' 
+                    LoginLogoutEvents: firestore.FieldValue.arrayUnion({
+                        timestamp: moment().format('YYYY-MM-DD hh:mm A'),
+                        status: 'User logged In'
                     })
                 });
-    
-                // Check if email is verified
                 if (user.emailVerified) {
                     navigation.navigate('HomeScreen');
                 } else {
@@ -57,12 +48,13 @@ const LoginScreen = ({ navigation }) => {
             } else {
                 setIsError('User data not found in Firestore.');
             }
+            setIsLoading(false); // Hide activity indicator
         } catch (error) {
-            setIsError('Error signing in: ' + error.message); // Display specific error message
+            setIsError('Error signing in: ' + error.message);
+            setIsLoading(false); // Hide activity indicator
         }
     };
-    
-     
+
     return (
         <View style={styles.Main_Cont}>
             <Text style={styles.Sign_Txt}>Sign In</Text>
@@ -88,20 +80,18 @@ const LoginScreen = ({ navigation }) => {
                 />
             </View>
             {isError ? (
-                <Text style={{ color: 'red' ,fontSize:14}}>{isError}</Text>
-              ) : null}
-            <CustomButton title={'Login'} onPress={() => { handleSignIn()}} />
+                <Text style={{ color: 'red', fontSize: 14 }}>{isError}</Text>
+            ) : null}
+            <CustomButton title={'Login'} onPress={() => { handleSignIn() }} />
             <View style={styles.SignUp_Cont}>
                 <Text style={styles.Already_Txt}>Don't have an account?</Text>
                 <TouchableOpacity onPress={() => { navigation.navigate('SignUp') }} >
                     <Text style={styles.Btn_Txt} >Sign Up</Text>
                 </TouchableOpacity>
             </View>
+            {isLoading && <ActivityIndicator size="large" color={Colors.Black} />} 
         </View>
+    );
+};
 
-    )
-}
-
-export default LoginScreen
-
-
+export default LoginScreen;

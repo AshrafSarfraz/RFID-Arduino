@@ -28,12 +28,10 @@ const SignUpScreen = ({ navigation }) => {
         }
         try {
             const userCredential = await auth().createUserWithEmailAndPassword(Email, password);
-
-            console.log('User account created & signed in!', userCredential.user.uid);
+            setIsError('User account created ',);
             const user = userCredential.user;
             const userId = user.uid;
-
-            // Store additional user details in your database (Firestore, Realtime Database, etc.)
+// Store additional user details in your database (Firestore, Realtime Database, etc.)
             await firestore().collection('Users').doc(userId).set({
                 Name: Name,
                 Username: Username,

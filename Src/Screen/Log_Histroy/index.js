@@ -6,27 +6,10 @@ import CustomHeader from '../../Components/CustomHeader'
 import { Home } from '../../Themes/Icons'
 import { styles } from './style'
 
-const Events=[
-    {
-        Id:1,
-        Times:'Aug 2020',
-        Event:'USER lOGIN In',
-    },
-    {
-        Id:2,
-        Times:'Aug 2020',
-        Event:'USER lOGIN Out',
-    },
-    {
-        Id:3,
-        Times:'Aug 2021',
-        Event:'USER lOGIN In',
-    },
-]
 
 const LogHistroy = ({navigation}) => {
-
   const [loginLogoutEvents, setLoginLogoutEvents] = useState([]);
+  const [isError, setIsError] = useState('');
 
   useEffect(() => {
       const unsubscribe = auth().onAuthStateChanged(user => {
@@ -46,10 +29,10 @@ const LogHistroy = ({navigation}) => {
               const events = userData.LoginLogoutEvents || [];
               setLoginLogoutEvents(events);
           } else {
-              console.log('User data not found in Firestore.');
+              setIsError('User data not Found.');
           }
       } catch (error) {
-          console.error('Error fetching login/logout events:', error.message);
+        setIsError.error('Error fetching login/logout events:', error.message);
       }
   };
 
@@ -70,6 +53,9 @@ const LogHistroy = ({navigation}) => {
       renderItem={RenderItem}
       keyExtractor={item => item.id}
     />
+    {isError ? (
+        <Text style={{ color: 'red', fontSize: 14 }}>{isError}</Text>
+    ) : null}
   </View>
     </View>
   )

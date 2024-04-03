@@ -6,26 +6,20 @@ import moment from 'moment'; // Import moment library
 import CustomButton from '../../Components/CustomButton'
 import { styles } from './style'
 
+
 const HomeScreen = ({ navigation }) => {
   const handleSignOut = async () => {
     try {
-        const user = auth().currentUser; // Get current user
-
-        // Create a logout event
-        const logoutEvent = { 
+        const user = auth().currentUser; 
+        const logoutEvent = {   //Event Login/Logout With Time
             timestamp: moment().format('YYYY-MM-DD hh:mm A'), 
             status: 'User logged Out' 
         };
-
-        // Update the user's logout event in Firestore
+// Update the user's logout event in Firestore
         await firestore().collection('Users').doc(user.uid).update({
             LoginLogoutEvents: firestore.FieldValue.arrayUnion(logoutEvent)
         });
-
-        // Sign out the user
         await auth().signOut();
-        
-        // Navigate to the Login screen
         navigation.navigate('Login');
     } catch (error) {
         Alert.alert('Error signing out:', error.message);
