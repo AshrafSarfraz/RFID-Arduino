@@ -1,66 +1,61 @@
-import { View, Text, StyleSheet, FlatList } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import firestore from '@react-native-firebase/firestore';
+import moment from 'moment';
 import CustomHeader from '../../../Components/CustomHeader';
 import { Home } from '../../../Themes/Icons';
 import { styles } from './style';
 
-const Events = [
-  {
-    Id: 1,
-    Username: 'Hafiz',
-    Level: 'Manager',
-    Phone: "123-456-7890",
-    Date: 'Aug 20,',
-    Times: '12:00 Am',
-    Event: 'User Logged In',
-  },
-  {
-    Id: 2,
-    Username: 'Hafiz',
-    Level: 'Manager',
-    Phone: "123-456-7890",
-    Date: 'Aug 20,',
-    Times: '12:00 Am',
-    Event: 'User Logged Out',
-  },
-  {
-    Id: 3,
-    Username: 'Hafiz',
-    Level: 'Manager',
-    Phone: "123-456-7890",
-    Date: 'Aug 20,',
-    Times: '12:00 Am',
-    Event: 'User Logged In',
-  },
-]
-
 const Admin_Log = ({ navigation }) => {
+  const [userData, setUserData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const RenderItem = ({ item, index }) => (
+  useEffect(() => {
+    const unsubscribe = firestore().collection('Users').onSnapshot(snapshot => {
+      const userDataArray = [];
+      snapshot.forEach(doc => {
+        const userData = doc.data();
+        const events = userData.LoginLogoutEvents || [];
+        events.forEach(event => {
+          userDataArray.push({ id: doc.id, ...userData, event });
+        });
+      });
+      setUserData(userDataArray);
+      setIsLoading(false);
+    });
+  
+    return () => unsubscribe();
+  }, []);
+  
+  
+
+  const RenderItem = ({ item }) => (
     <View style={styles.Cart}>
-      <Text style={styles.Time_txt}>UserName: {item.Username}</Text>
+      <Text style={styles.Time_txt}>UserName: {item.Name}</Text>
       <Text style={styles.UserDetail_txt}>Level: {item.Level}</Text>
       <Text style={styles.UserDetail_txt}>Phone: {item.Phone}</Text>
-      <Text style={styles.UserDetail_txt}>Date: {item.Date}</Text>
-      <Text style={styles.UserDetail_txt}>Time: {item.Times}</Text>
-      <Text style={styles.Event_txt}>Event: {item.Event}</Text>
+      <Text style={styles.UserDetail_txt}>Date: {moment(item.event.timestamp).format('MM-DD-YYYY')}</Text>
+      <Text style={styles.UserDetail_txt}>Time: {moment(item.event.timestamp).format('h:mm:ss a')}</Text>
+      <Text style={styles.Event_txt}>Event: {item.event.status}</Text>
     </View>
   );
+  
 
   return (
     <View style={styles.Main_Cont}>
       <CustomHeader Title={'Event Log'} source={Home} onPress={() => { navigation.goBack() }} />
-      <View style={styles.FlatList_Cont} >
+      {isLoading ? (
+        <Text>Loading...</Text>
+      ) : (
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={Events}
+          data={userData}
           renderItem={RenderItem}
-          keyExtractor={item => item.Id.toString()}
+          keyExtractor={item => item.id}
         />
-      </View>
+      )}
     </View>
-  )
-}
+  );
+};
 
-export default Admin_Log
-
+export default Admin_Log;

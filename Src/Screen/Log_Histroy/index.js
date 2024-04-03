@@ -1,5 +1,7 @@
 import { View, Text,  FlatList } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import CustomHeader from '../../Components/CustomHeader'
 import { Home } from '../../Themes/Icons'
 import { styles } from './style'
@@ -24,10 +26,37 @@ const Events=[
 
 const LogHistroy = ({navigation}) => {
 
+  const [loginLogoutEvents, setLoginLogoutEvents] = useState([]);
+
+  useEffect(() => {
+      const unsubscribe = auth().onAuthStateChanged(user => {
+          if (user) {
+              fetchLoginLogoutEvents(user.uid);
+          }
+      });
+
+      return unsubscribe;
+  }, []);
+
+  const fetchLoginLogoutEvents = async (userId) => {
+      try {
+          const userDoc = await firestore().collection('Users').doc(userId).get();
+          if (userDoc.exists) {
+              const userData = userDoc.data();
+              const events = userData.LoginLogoutEvents || [];
+              setLoginLogoutEvents(events);
+          } else {
+              console.log('User data not found in Firestore.');
+          }
+      } catch (error) {
+          console.error('Error fetching login/logout events:', error.message);
+      }
+  };
+
  const RenderItem = ({ item, index }) => (
     <View style={styles.Cart}>
-         <Text style={styles.Time_txt}>Time: {item.Times}</Text>
-          <Text style={styles.Event_txt}>Event: {item.Event}</Text>
+         <Text style={styles.Time_txt}>Time:{item.timestamp}</Text>
+          <Text style={styles.Event_txt}>Event: {item.status}</Text>
         </View>
   );
  
@@ -37,9 +66,9 @@ const LogHistroy = ({navigation}) => {
     <View style={styles.FlatList_Cont} >
     <FlatList
       showsVerticalScrollIndicator={false}
-      data={Events}
+      data={loginLogoutEvents}
       renderItem={RenderItem}
-      keyExtractor={item => item.Id.toString()}
+      keyExtractor={item => item.id}
     />
   </View>
     </View>
