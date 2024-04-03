@@ -12,6 +12,8 @@ import Administrator from '../Screen/Admin_Section/Adminstrator';
 import Admin_Log from '../Screen/Admin_Section/Admin_Log';
 import Admin_Login from '../Screen/Admin_Section/Admin_Login';
 import Main from '../Screen/Main';
+import Table_Screen from '../Screen/Admin_Section/Table';
+import EditTableScreen from '../Screen/Admin_Section/Table/EditTable';
 
 
 
@@ -30,6 +32,9 @@ function Stack_Nav() {
       <Stack.Screen name="LogHistroy" component={LogHistroy} />
       <Stack.Screen name="Administrator" component={Administrator} />
       <Stack.Screen name="Admin_Log" component={Admin_Log} />
+      <Stack.Screen name="Table" component={Table_Screen} />
+      <Stack.Screen name="EditTable" component={EditTableScreen} />
+      
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -10,7 +10,7 @@ const Administrator = ({navigation}) => {
     <View style={styles.Main_Cont} >
     <CustomHeader Title={'Administrator'} source={Exit} onPress={()=>{Alert.alert('Log Out'),navigation.goBack()}} />
     <CustomButton title={'View Logs'} onPress={()=>{navigation.navigate('Admin_Log')}}/>
-    <CustomButton title={'Manage Access'} onPress={()=>{Alert.alert('Not Added Yet')}}/>
+    <CustomButton title={'Manage Access'} onPress={()=>{navigation.navigate('Table')}}/>
     </View>
   )
 }
