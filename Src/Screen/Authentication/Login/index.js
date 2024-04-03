@@ -20,34 +20,48 @@ const LoginScreen = ({ navigation }) => {
                 setIsError('Please fill in both email and password fields.');
                 return;
             }    
+    
             const userCredential = await auth().signInWithEmailAndPassword(Email, password);
             const user = userCredential.user;
-            setEmail(''),setPassword('')
+            setEmail('');
+            setPassword('');
+    
+            // Retrieve user document from Firestore
             const userDoc = await firestore().collection('Users').doc(user.uid).get();
+    
             if (userDoc.exists) {
                 const userData = userDoc.data();
-                setUserData(JSON.stringify(userData))  
+    
+                // Check if the user has a login count property
+                let loginCount = userData.LoginCount || 0;
+                loginCount++; // Increment the login count
+    
+                // Update user data in Firestore with the incremented login count
+                await firestore().collection('Users').doc(user.uid).update({
+                    LoginCount: loginCount,
+                    // Add the login event to the array of login/logout events
+                    LoginLogoutEvents: firestore.FieldValue.arrayUnion({ 
+                        timestamp: moment().format('YYYY-MM-DD hh:mm A'), 
+                        status: 'User logged In' 
+                    })
+                });
+    
+                // Check if email is verified
+                if (user.emailVerified) {
+                    navigation.navigate('HomeScreen');
+                } else {
+                    setIsError('You are not verified. Please check your email for verification.');
+                    await auth().currentUser.sendEmailVerification();
+                    await auth().signOut();
+                }
             } else {
                 setIsError('User data not found in Firestore.');
-            }
-            // Update user login activity in Firestore
-            const loginEvent = { timestamp: moment().format('YYYY-MM-DD hh:mm A'), status: 'User logged In' };
-            await firestore().collection('Users').doc(user.uid).update({
-                LoginLogoutEvents: firestore.FieldValue.arrayUnion(loginEvent)
-            });
-    
-            // Check if email is verified
-            if (user.emailVerified) {
-                navigation.navigate('HomeScreen');
-            } else {
-                setIsError('You are not verified. Please check your email for verification.');
-                await auth().currentUser.sendEmailVerification();
-                await auth().signOut();
             }
         } catch (error) {
             setIsError('Error signing in: ' + error.message); // Display specific error message
         }
     };
+    
      
     return (
         <View style={styles.Main_Cont}>

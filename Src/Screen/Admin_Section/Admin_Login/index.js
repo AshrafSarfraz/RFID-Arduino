@@ -15,10 +15,9 @@ const Admin_Login = ({ navigation }) => {
       // Navigate to Administrator screen
       navigation.navigate('Administrator');
       
-      // Store email and password in AsyncStorage
       try {
-        await AsyncStorage.setItem('userEmail', Email);
-        await AsyncStorage.setItem('userPassword', password);
+        const userDataArray = [{ email: Email, password: password }];
+        await AsyncStorage.setItem('AdminData', JSON.stringify(userDataArray));
       } catch (error) {
         console.error('Error storing data:', error.message);
       }

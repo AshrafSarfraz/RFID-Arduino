@@ -9,17 +9,28 @@ import { styles } from './style'
 const HomeScreen = ({ navigation }) => {
   const handleSignOut = async () => {
     try {
-      const user = auth().currentUser; // Get current user
-      const loginEvent = { timestamp: moment().format('YYYY-MM-DD hh:mm A'), status: 'User logged Out' };
-      await firestore().collection('Users').doc(user.uid).update({
-        LoginLogoutEvents: firestore.FieldValue.arrayUnion(loginEvent)
-      });
-      await auth().signOut();
-      navigation.navigate('Login');
+        const user = auth().currentUser; // Get current user
+
+        // Create a logout event
+        const logoutEvent = { 
+            timestamp: moment().format('YYYY-MM-DD hh:mm A'), 
+            status: 'User logged Out' 
+        };
+
+        // Update the user's logout event in Firestore
+        await firestore().collection('Users').doc(user.uid).update({
+            LoginLogoutEvents: firestore.FieldValue.arrayUnion(logoutEvent)
+        });
+
+        // Sign out the user
+        await auth().signOut();
+        
+        // Navigate to the Login screen
+        navigation.navigate('Login');
     } catch (error) {
-      Alert.alert('Error signing out:', error.message);
+        Alert.alert('Error signing out:', error.message);
     }
-  };
+};
 
   return (
     <View style={styles.Main_Cont}>

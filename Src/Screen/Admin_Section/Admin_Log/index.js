@@ -31,11 +31,17 @@ const Admin_Log = ({ navigation }) => {
 
   const RenderItem = ({ item }) => (
     <View style={styles.Cart}>
-      <Text style={styles.Time_txt}>UserName: {item.Name}</Text>
+      <Text style={styles.Time_txt}>Username: {item.Name}</Text>
       <Text style={styles.UserDetail_txt}>Level: {item.Level}</Text>
       <Text style={styles.UserDetail_txt}>Phone: {item.Phone}</Text>
-      <Text style={styles.UserDetail_txt}>Date: {moment(item.event.timestamp).format('MM-DD-YYYY')}</Text>
-      <Text style={styles.UserDetail_txt}>Time: {moment(item.event.timestamp).format('h:mm:ss a')}</Text>
+      {item.event.timestamp && moment(item.event.timestamp, 'YYYY-MM-DD hh:mm A').isValid() ? (
+        <View>
+          <Text style={styles.UserDetail_txt}>Date: {moment(item.event.timestamp, 'YYYY-MM-DD hh:mm A').format('MM-DD-YYYY')}</Text>
+          <Text style={styles.UserDetail_txt}>Time: {moment(item.event.timestamp, 'YYYY-MM-DD hh:mm A').format('h:mm:ss a')}</Text>
+        </View>
+      ) : (
+        <Text style={styles.UserDetail_txt}>Invalid Date and Time</Text>
+      )}
       <Text style={styles.Event_txt}>Event: {item.event.status}</Text>
     </View>
   );
